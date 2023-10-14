@@ -52,6 +52,8 @@ custom-background-color=true
 customize-alphas=true
 max-alpha=0.8
 min-alpha=0.5
+autohide=true
+intellihide=true
 
 [org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0]
 binding='<Control><Alt>t'
