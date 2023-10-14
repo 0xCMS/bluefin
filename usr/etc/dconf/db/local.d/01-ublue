@@ -19,6 +19,7 @@ font-antialiasing="rgba"
 font-name="Ubuntu 12"
 document-font-name="Ubuntu 12"
 monospace-font-name="Ubuntu Mono 18"
+color-scheme="prefer-dark"
 
 [org/gnome/desktop/sound]
 allow-volume-above-100-percent=true
