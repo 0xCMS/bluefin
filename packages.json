@@ -3,9 +3,6 @@
 		"include": {
 			"bluefin": [
 				"bash-color-prompt",
-				"ddccontrol-db",
-				"ddccontrol-gtk",
-				"ddccontrol",
 				"evtest",
 				"gnome-shell-extension-appindicator",
 				"gnome-shell-extension-blur-my-shell",
