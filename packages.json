@@ -19,6 +19,7 @@
 				"pulseaudio-utils",
 				"python3-pip",
 				"tailscale",
+				"tlp",
 				"tmux",
 				"ublue-update",
 				"wireguard-tools",
