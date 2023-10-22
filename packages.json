@@ -16,6 +16,7 @@
 				"libxcrypt-compat",
 				"mesa-libGLU",
 				"nautilus-gsconnect",
+				"onedrive",
 				"proton-vpn-gnome-desktop",
 				"pulseaudio-utils",
 				"python3-pip",
