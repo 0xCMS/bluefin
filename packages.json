@@ -27,13 +27,9 @@
 				"wireguard-tools",
 				"xprop",
 				"yaru-theme",
-				"wl-clipboard", 
-				"zsh"
-			],
-			"bluefin-dx": [
+				"wl-clipboard",
 				"adobe-source-code-pro-fonts",
 				"cascadiacode-nerd-fonts",
-				"code",
 				"containerd.io",
 				"dbus-x11",
 				"docker-ce",
@@ -42,7 +38,6 @@
 				"docker-compose-plugin",
 				"edk2-ovmf",
 				"edk2-ovmf",
-				"genisoimage",
 				"google-droid-sans-mono-fonts",
 				"google-go-mono-fonts",
 				"ibm-plex-mono-fonts",
@@ -82,37 +77,29 @@
 				"gnome-software-rpm-ostree",
 				"gnome-tour",
 				"ublue-os-update-services"
-			],
-			"bluefin-dx": []
+			]
 		}
 	},
 	"38": {
 		"include": {
-			"bluefin": [],
-			"bluefin-dx": [],
-			"bluefin-framework": []
+			"bluefin": []
 		},
 		"exclude": {
 			"bluefin": [
 				"podman-docker"
-			],
-			"bluefin-dx": []
+			]
 		}
 	},
 	"39": {
 		"include": {
 			"bluefin": [
 				"input-leap"	
-			],
-			"bluefin-dx": [],
-			"bluefin-framework": []
+			]
 		},
 		"exclude": {
 			"bluefin": [
 				"podman-docker"
-			],
-			"bluefin-dx": [],
-			"bluefin-framework": []
+			]
 		}
 	}
 }
