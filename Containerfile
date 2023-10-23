@@ -23,8 +23,14 @@ COPY etc/yum.repos.d/ /etc/yum.repos.d/
 COPY packages.json /tmp/packages.json
 COPY build.sh /tmp/build.sh
 COPY image-info.sh /tmp/image-info.sh
+COPY workarounds.sh /tmp/workarounds.sh
 # Copy ublue-update.toml to tmp first, to avoid being overwritten.
 COPY usr/etc/ublue-update/ublue-update.toml /tmp/ublue-update.toml
+
+# Apply IP Forwarding before installing Docker to prevent messing with LXC networking
+RUN sysctl -p
+
+RUN /tmp/workarounds.sh
 
 # Add ublue kmods, add needed negativo17 repo and then immediately disable due to incompatibility with RPMFusion
 COPY --from=ghcr.io/ublue-os/akmods:${AKMODS_FLAVOR}-${FEDORA_MAJOR_VERSION} /rpms /tmp/akmods-rpms
@@ -63,6 +69,8 @@ RUN curl -Lo /tmp/starship.tar.gz "https://github.com/starship/starship/releases
 
 RUN wget https://copr.fedorainfracloud.org/coprs/ublue-os/bling/repo/fedora-$(rpm -E %fedora)/ublue-os-bling-fedora-$(rpm -E %fedora).repo -O /etc/yum.repos.d/_copr_ublue-os-bling.repo && \
     wget https://copr.fedorainfracloud.org/coprs/ublue-os/staging/repo/fedora-"${FEDORA_MAJOR_VERSION}"/ublue-os-staging-fedora-"${FEDORA_MAJOR_VERSION}".repo -O /etc/yum.repos.d/ublue-os-staging-fedora-"${FEDORA_MAJOR_VERSION}".repo && \
+    wget https://copr.fedorainfracloud.org/coprs/ganto/lxc4/repo/fedora-"${FEDORA_MAJOR_VERSION}"/ganto-lxc4-fedora-"${FEDORA_MAJOR_VERSION}".repo -O /etc/yum.repos.d/ganto-lxc4-fedora-"${FEDORA_MAJOR_VERSION}".repo && \
+    wget https://copr.fedorainfracloud.org/coprs/principis/howdy/repo/fedora-"${FEDORA_MAJOR_VERSION}"/principis-howdy-fedora-"${FEDORA_MAJOR_VERSION}".repo -O /etc/yum.repos.d/principis-howdy-fedora-"${FEDORA_MAJOR_VERSION}".repo && \
     /tmp/build.sh && \
     /tmp/image-info.sh && \
     pip install --prefix=/usr yafti && \
@@ -82,10 +90,14 @@ RUN wget https://copr.fedorainfracloud.org/coprs/ublue-os/bling/repo/fedora-$(rp
     systemctl enable ublue-system-flatpak-manager.service && \
     systemctl --global enable ublue-user-flatpak-manager.service && \
     systemctl --global enable ublue-user-setup.service && \
+    systemctl enable podman.socket && \
     fc-cache -f /usr/share/fonts/ubuntu && \
     fc-cache -f /usr/share/fonts/inter && \
+    fc-cache -f /usr/share/fonts/intelmono && \
     find /tmp/just -iname '*.just' -exec printf "\n\n" \; -exec cat {} \; >> /usr/share/ublue-os/just/60-custom.just && \
     rm -f /etc/yum.repos.d/tailscale.repo && \
+    rm -f /etc/yum.repos.d/protonvpn-stable.repo && \
+    rm -f /etc/yum.repos.d/docker-ce.repo && \
     rm -f /etc/yum.repos.d/_copr_ublue-os-bling.repo && \
     rm -f /etc/yum.repos.d/ublue-os-staging-fedora-"${FEDORA_MAJOR_VERSION}".repo && \
     rm -f /usr/share/applications/fish.desktop && \
@@ -98,51 +110,3 @@ RUN wget https://copr.fedorainfracloud.org/coprs/ublue-os/bling/repo/fedora-$(rp
     ostree container commit && \
     mkdir -p /var/tmp && \
     chmod -R 1777 /var/tmp
-
-## bluefin-dx developer edition image section
-FROM bluefin AS bluefin-dx
-
-ARG IMAGE_NAME="${IMAGE_NAME}"
-ARG IMAGE_VENDOR="${IMAGE_VENDOR}"
-ARG BASE_IMAGE_NAME="${BASE_IMAGE_NAME}"
-ARG IMAGE_FLAVOR="${IMAGE_FLAVOR}"
-ARG FEDORA_MAJOR_VERSION="${FEDORA_MAJOR_VERSION}"
-ARG PACKAGE_LIST="bluefin-dx"
-
-# dx specific files come from the dx directory in this repo
-COPY dx/usr /usr
-COPY dx/etc/yum.repos.d/ /etc/yum.repos.d/
-COPY workarounds.sh \
-     packages.json \
-     build.sh \
-     image-info.sh \
-    /tmp
-
-# Apply IP Forwarding before installing Docker to prevent messing with LXC networking
-RUN sysctl -p
-
-RUN wget https://copr.fedorainfracloud.org/coprs/ganto/lxc4/repo/fedora-"${FEDORA_MAJOR_VERSION}"/ganto-lxc4-fedora-"${FEDORA_MAJOR_VERSION}".repo -O /etc/yum.repos.d/ganto-lxc4-fedora-"${FEDORA_MAJOR_VERSION}".repo && \
-    wget https://copr.fedorainfracloud.org/coprs/ublue-os/staging/repo/fedora-"${FEDORA_MAJOR_VERSION}"/ublue-os-staging-fedora-"${FEDORA_MAJOR_VERSION}".repo -O /etc/yum.repos.d/ublue-os-staging-fedora-"${FEDORA_MAJOR_VERSION}".repo \
-    wget https://copr.fedorainfracloud.org/coprs/principis/howdy/repo/fedora-"${FEDORA_MAJOR_VERSION}"/principis-howdy-fedora-"${FEDORA_MAJOR_VERSION}".repo -O /etc/yum.repos.d/principis-howdy-fedora-"${FEDORA_MAJOR_VERSION}".repo
-
-# Handle packages via packages.json
-RUN /tmp/build.sh && \
-    /tmp/image-info.sh
-
-RUN wget https://github.com/docker/compose/releases/latest/download/docker-compose-linux-x86_64 -O /tmp/docker-compose && \
-    install -c -m 0755 /tmp/docker-compose /usr/bin
-
-# Set up services
-RUN systemctl enable podman.socket
-
-RUN /tmp/workarounds.sh
-
-# Clean up repos, everything is on the image so we don't need them
-RUN rm -f /etc/yum.repos.d/ublue-os-staging-fedora-"${FEDORA_MAJOR_VERSION}".repo && \
-    rm -f /etc/yum.repos.d/ganto-lxc4-fedora-"${FEDORA_MAJOR_VERSION}".repo && \
-    rm -f /etc/yum.repos.d/vscode.repo && \
-    rm -f /etc/yum.repos.d/docker-ce.repo && \
-    rm -f /etc/yum.repos.d/_copr:copr.fedorainfracloud.org:phracek:PyCharm.repo && \
-    rm -f /etc/yum.repos.d/fedora-cisco-openh264.repo && \
-    rm -rf /tmp/* /var/* && \
-    ostree container commit
