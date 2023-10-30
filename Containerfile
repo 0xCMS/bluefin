@@ -70,7 +70,6 @@ RUN curl -Lo /tmp/starship.tar.gz "https://github.com/starship/starship/releases
 RUN wget https://copr.fedorainfracloud.org/coprs/ublue-os/bling/repo/fedora-$(rpm -E %fedora)/ublue-os-bling-fedora-$(rpm -E %fedora).repo -O /etc/yum.repos.d/_copr_ublue-os-bling.repo && \
     wget https://copr.fedorainfracloud.org/coprs/ublue-os/staging/repo/fedora-"${FEDORA_MAJOR_VERSION}"/ublue-os-staging-fedora-"${FEDORA_MAJOR_VERSION}".repo -O /etc/yum.repos.d/ublue-os-staging-fedora-"${FEDORA_MAJOR_VERSION}".repo && \
     wget https://copr.fedorainfracloud.org/coprs/ganto/lxc4/repo/fedora-"${FEDORA_MAJOR_VERSION}"/ganto-lxc4-fedora-"${FEDORA_MAJOR_VERSION}".repo -O /etc/yum.repos.d/ganto-lxc4-fedora-"${FEDORA_MAJOR_VERSION}".repo && \
-    wget https://copr.fedorainfracloud.org/coprs/principis/howdy/repo/fedora-"${FEDORA_MAJOR_VERSION}"/principis-howdy-fedora-"${FEDORA_MAJOR_VERSION}".repo -O /etc/yum.repos.d/principis-howdy-fedora-"${FEDORA_MAJOR_VERSION}".repo && \
     /tmp/build.sh && \
     /tmp/image-info.sh && \
     pip install --prefix=/usr yafti && \
