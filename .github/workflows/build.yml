@@ -23,7 +23,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        image_flavor: [nvidia]
+        image_flavor: [main, nvidia]
         base_name: [bluefin]
         major_version: [38]
         include:
